@@ -22,6 +22,8 @@ export const getReserves = async (
         body: JSON.stringify({ query }),
     });
     const result = await response.json();
+    console.log(`reserve response`);
+    console.log(result.data);
     const reserves: [number, number] = [
         parseFloat(result.data.pair.reserve0),
         parseFloat(result.data.pair.reserve1),
