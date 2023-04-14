@@ -1,13 +1,13 @@
-# DeFi Anime
+# Uniswap Animation
 
-Visual animation of Decentralised Finance (DeFi) protocols.
+ETH Tokyo hackathon project animating the USDC/WETH Uniswap V3 pool over time.
 
 ## Installation
 
 Clone this repository and install the dependencies.
 
 ```
-git clone git@github.com:naddison36/defi-animation.git
+git clone git@github.com:naddison36/defi-anime.git
 yarn
 ```
 

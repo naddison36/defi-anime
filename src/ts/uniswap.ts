@@ -1,7 +1,6 @@
 import { Balance, Flow } from './typings';
 
-const uniswapUrl =
-    'https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2';
+const uniswapUrl = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
 
 export const getReserves = async (
     pairAddress: string,
@@ -9,9 +8,9 @@ export const getReserves = async (
 ): Promise<Balance> => {
     const query = `
           query {
-            pair(id: "${pairAddress}", block: {number: ${block}}) {
-              reserve0
-              reserve1
+            pool(id: "${pairAddress}", block: {number: ${block}}) {
+              totalValueLockedToken0
+              totalValueLockedToken1
             }
           }
         `;
@@ -25,15 +24,15 @@ export const getReserves = async (
     });
     const result = await response.json();
     const reserves: [number, number] = [
-        parseFloat(result.data.pair.reserve0),
-        parseFloat(result.data.pair.reserve1),
+        parseFloat(result.data.pool.totalValueLockedToken0),
+        parseFloat(result.data.pool.totalValueLockedToken1),
     ];
     console.log(`reserves at block ${block}: ${reserves}`);
     return reserves;
 };
 
 export const getFlows = async (
-    pairAddress: string,
+    poolAddress: string,
     startTime: number,
     endTime: number,
 ): Promise<Flow[]> => {
@@ -41,7 +40,7 @@ export const getFlows = async (
     {
         swaps(
           where: {
-            pair: "${pairAddress}"
+            pool: "${poolAddress}"
             timestamp_gte: ${startTime}
             timestamp_lte: ${endTime}
           },
@@ -49,10 +48,8 @@ export const getFlows = async (
           orderDirection: asc,
           first: 1000
         ) {
-          amount0In
-          amount1In
-          amount0Out
-          amount1Out
+          amount0
+          amount0
           timestamp
           sender
           logIndex
@@ -62,7 +59,7 @@ export const getFlows = async (
         },
         mints(
           where: {
-            pair: "${pairAddress}"
+            pool: "${poolAddress}"
             timestamp_gte: ${startTime}
             timestamp_lte: ${endTime}
           },
@@ -80,7 +77,7 @@ export const getFlows = async (
         },
         burns(
           where: {
-            pair: "${pairAddress}"
+            pool: "${poolAddress}"
             timestamp_gte: ${startTime}
             timestamp_lte: ${endTime}
           },
@@ -90,7 +87,7 @@ export const getFlows = async (
             amount0
             amount1
             timestamp
-            sender
+            owner
             logIndex
             transaction {
               blockNumber
@@ -107,18 +104,27 @@ export const getFlows = async (
     });
     const result = await response.json();
 
-    const swapFlows = result.data.swaps.map((s: any) => ({
-        type: 'Swap',
-        in: [s.amount0In, s.amount1In],
-        out: [s.amount0Out, s.amount1Out],
-        timestamp: s.timestamp,
-        sender: s.sender,
-        logIndex: parseInt(s.logIndex),
-        block: parseInt(s.transaction.blockNumber),
-    }));
+    const swapFlows = result.data.swaps.map((s: any) => {
+        const amount0 = parseFloat(s.amount0);
+        const amount1 = parseFloat(s.amount1);
+        const inFlow = [amount0 >= 0 ? amount0 : 0, amount1 >= 0 ? amount1 : 0];
+        const outFlow = [
+            amount0 < 0 ? -1 * amount0 : 0,
+            amount1 < 0 ? -1 * amount1 : 0,
+        ];
+        return {
+            type: 'Swap',
+            in: inFlow,
+            out: outFlow,
+            timestamp: s.timestamp,
+            sender: s.sender,
+            logIndex: parseInt(s.logIndex),
+            block: parseInt(s.transaction.blockNumber),
+        };
+    });
     const mintFlows = result.data.mints.map((m: any) => ({
         type: 'Mint',
-        in: [m.amount0, m.amount1],
+        in: [parseFloat(m.amount0), parseFloat(m.amount1)],
         out: [0, 0],
         timestamp: m.timestamp,
         sender: m.sender,
@@ -128,9 +134,9 @@ export const getFlows = async (
     const burnFlows = result.data.burns.map((b: any) => ({
         type: 'Burn',
         in: [0, 0],
-        out: [b.amount0, b.amount1],
+        out: [parseFloat(b.amount0), parseFloat(b.amount1)],
         timestamp: b.timestamp,
-        sender: b.sender,
+        sender: b.owner,
         logIndex: parseInt(b.logIndex),
         block: parseInt(b.transaction.blockNumber),
     }));
