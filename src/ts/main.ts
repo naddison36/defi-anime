@@ -1,6 +1,6 @@
 import '../style.css';
+import { render } from './reserveProduct';
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-  </div>
-`;
+(async () => {
+    await render(['USDC', 'WETH']);
+})();
