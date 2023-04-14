@@ -10,8 +10,8 @@ export const flowDuration = 500;
 // TODO hard code for now. Ideally these would come from UI
 const poolAddress = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
 const tokens = ['USDC', 'WETH'];
-const startTime = 1625037000;
-const endTime = 1625038000;
+const startTime = 1660152000;
+const endTime = 1660154000;
 
 let flows: Flow[];
 let flowIndex = 0;

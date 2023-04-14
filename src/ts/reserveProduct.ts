@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import * as d3 from 'd3';
+import { flowDuration } from './main';
 import { Balance } from './typings';
 
 // set the dimensions and margins of the graph
@@ -88,21 +89,31 @@ export const render = (
         // invariant = x * y
         const invariant = BigNumber(bal[0]).times(bal[1]);
 
-        svg.select('#xyPoint').attr('cx', x).attr('cy', y);
-        svg.select('#xLine').attr(
-            'd',
-            d3.line()([
-                [0, y],
-                [x, y],
-            ]),
-        );
-        svg.select('#yLine').attr(
-            'd',
-            d3.line()([
-                [x, height],
-                [x, y],
-            ]),
-        );
+        svg.select('#xyPoint')
+            .attr('cx', x)
+            .attr('cy', y)
+            .transition()
+            .duration(flowDuration);
+        svg.select('#xLine')
+            .attr(
+                'd',
+                d3.line()([
+                    [0, y],
+                    [x, y],
+                ]),
+            )
+            .transition()
+            .duration(flowDuration);
+        svg.select('#yLine')
+            .attr(
+                'd',
+                d3.line()([
+                    [x, height],
+                    [x, y],
+                ]),
+            )
+            .transition()
+            .duration(flowDuration);
 
         // Calc top left point
         // min x = k / max y
@@ -130,7 +141,10 @@ export const render = (
             [x, y],
             [xScale(maxX), yScale(minY)],
         ]);
-        svg.select('#xyCurve').attr('d', line);
+        svg.select('#xyCurve')
+            .attr('d', line)
+            .transition()
+            .duration(flowDuration);
     };
 
     updateReserveProduct();
