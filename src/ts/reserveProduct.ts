@@ -12,7 +12,7 @@ export const render = (
     tokens: string[],
     balances: Balance[],
     currentBalance: () => Balance,
-) => {
+): (() => void) => {
     const svg = d3
         .select('#reserve_product')
         .append('svg')

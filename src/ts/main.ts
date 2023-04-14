@@ -18,5 +18,26 @@ let flowIndex = 0;
         12376937,
     );
     const poolBalances = parsePoolBalances(flows, balancesStart);
-    await render(tokens, poolBalances, () => poolBalances[flowIndex]);
+    const refesh = await render(
+        tokens,
+        poolBalances,
+        () => poolBalances[flowIndex],
+    );
+
+    const previous = () => {
+        flowIndex--;
+        refesh();
+    };
+
+    const next = () => {
+        flowIndex++;
+        refesh();
+    };
+
+    document
+        .querySelector<HTMLButtonElement>('#btnPrevious')!
+        .addEventListener('click', previous);
+    document
+        .querySelector<HTMLButtonElement>('#btnNext')!
+        .addEventListener('click', next);
 })();
