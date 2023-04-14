@@ -13,8 +13,10 @@ let flowIndex = 0;
 
 (async () => {
     const flows = await getFlows(poolAddress, startTime, endTime);
-    const balancesStart = await getReserves(poolAddress, 15825207);
+    const startBlock = flows[0].block;
+    const balancesStart = await getReserves(poolAddress, startBlock);
     const poolBalances = parsePoolBalances(flows, balancesStart);
+
     const refesh = await render(
         tokens,
         poolBalances,

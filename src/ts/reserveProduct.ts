@@ -22,10 +22,7 @@ export const render = (
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
     // Add X axis --> Token 0 - USDC
-    const token0Domain: [number, number] = d3.extent(balances, (d) => d[0]) as [
-        number,
-        number,
-    ];
+    const token0Domain = d3.extent(balances, (d) => d[0]) as [number, number];
     const xScale = d3
         .scaleLinear()
         .domain(token0Domain)

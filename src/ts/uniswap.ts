@@ -52,6 +52,7 @@ export const getFlows = async (
           amount0
           timestamp
           sender
+          recipient
           logIndex
           transaction {
             blockNumber
@@ -118,6 +119,7 @@ export const getFlows = async (
             out: outFlow,
             timestamp: s.timestamp,
             sender: s.sender,
+            recipient: s.recipient,
             logIndex: parseInt(s.logIndex),
             block: parseInt(s.transaction.blockNumber),
         };
@@ -137,6 +139,7 @@ export const getFlows = async (
         out: [parseFloat(b.amount0), parseFloat(b.amount1)],
         timestamp: b.timestamp,
         sender: b.owner,
+        recipient: b.owner,
         logIndex: parseInt(b.logIndex),
         block: parseInt(b.transaction.blockNumber),
     }));
