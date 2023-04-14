@@ -5,7 +5,7 @@ const margin = { top: 5, right: 5, bottom: 70, left: 70 },
     width = 400 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
-export const render = (tokens: string[]) => {
+export const render = (tokens: string[], balance: number[]) => {
     const svg = d3
         .select('#reserve_product')
         .append('svg')
@@ -17,7 +17,7 @@ export const render = (tokens: string[]) => {
     // Add X axis --> Token 0 - USDC
     const xScale = d3
         .scaleLinear()
-        .domain([23000000, 26000000])
+        .domain([balance[0], balance[0] * 1.05])
         .range([0, width])
         .nice();
     svg.append('g')
@@ -39,7 +39,7 @@ export const render = (tokens: string[]) => {
     // Add Y axis --> WETH
     const yScale = d3
         .scaleLinear()
-        .domain([23000, 24000])
+        .domain([balance[1], balance[1] * 1.05])
         .range([height, 0])
         .nice();
     svg.append('g').call(d3.axisLeft(yScale));
