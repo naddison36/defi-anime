@@ -1,0 +1,29 @@
+{
+    "name": "defi-anime",
+    "version": "0.0.1",
+    "description": "Animation of DeFi protocols",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview",
+        "test": "yarn test"
+    },
+    "keywords": [
+        "DeFi",
+        "animation",
+        "visual"
+    ],
+    "author": "Nick Addison",
+    "license": "MIT",
+    "dependencies": {
+        "d3": "^7.8.4"
+    },
+    "devDependencies": {
+        "@types/d3": "^7.4.0",
+        "prettier": "^2.8.7",
+        "typescript": "^5.0.4",
+        "vite": "^4.2.1"
+    }
+}
