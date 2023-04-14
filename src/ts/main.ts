@@ -4,19 +4,16 @@ import { render } from './reserveProduct';
 import { getFlows, getReserves } from './uniswap';
 
 // TODO hard code for now. Ideally these would come from UI
-const pairAddress = '0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc';
+const poolAddress = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
 const tokens = ['USDC', 'WETH'];
-const startTime = 1660153071;
-const endTime = startTime;
+const startTime = 1625037000;
+const endTime = 1625038000;
 
 let flowIndex = 0;
 
 (async () => {
-    const flows = await getFlows(pairAddress, startTime, endTime);
-    const balancesStart = await getReserves(
-        '0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc',
-        12376937,
-    );
+    const flows = await getFlows(poolAddress, startTime, endTime);
+    const balancesStart = await getReserves(poolAddress, 15825207);
     const poolBalances = parsePoolBalances(flows, balancesStart);
     const refesh = await render(
         tokens,

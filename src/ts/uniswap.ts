@@ -3,12 +3,12 @@ import { Balance, Flow } from './typings';
 const uniswapUrl = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
 
 export const getReserves = async (
-    pairAddress: string,
+    poolAddress: string,
     block: number,
 ): Promise<Balance> => {
     const query = `
           query {
-            pool(id: "${pairAddress}", block: {number: ${block}}) {
+            pool(id: "${poolAddress}", block: {number: ${block}}) {
               totalValueLockedToken0
               totalValueLockedToken1
             }
