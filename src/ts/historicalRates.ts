@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import { parseExchangeRate, parseInvariant } from './parsers';
 import { Balance, Component, Flow, Time } from './typings';
 
-const margin = { top: 20, right: 75, bottom: 80, left: 120 },
+const margin = { top: 20, right: 75, bottom: 80, left: 50 },
     width = 500 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom,
     componentId = 'historicalRates';

@@ -35,7 +35,7 @@ export const parseExchangeRate = (balance: Balance): BigNumber =>
     BigNumber(balance[0]).div(balance[1]);
 
 export const parseInvariant = (balance: Balance): BigNumber =>
-    BigNumber(balance[0]).times(balance[1]);
+    BigNumber(balance[0]).times(balance[1]).div(1e12);
 
 export const parseMaxAccountFlows = (
     accountsFlows: AccountsFlows,
