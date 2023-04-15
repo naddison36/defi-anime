@@ -4,7 +4,7 @@ import { parseMaxFlows, shortenAddress } from './parsers';
 import { Component, Flow } from './typings';
 
 // set the dimensions and margins of the graph
-const margin = 80,
+const margin = 100,
     width = 440 - 2 * margin,
     height = 440 - 2 * margin,
     maxRadius = 30,
@@ -58,6 +58,16 @@ export const renderPoolFlows = (
             .attr('fill', 'none')
             .style('stroke', 'currentColor') // set the color of the stroke
             .style('stroke-width', '1px'); // set the width of the stroke
+
+        // title label:
+        componentContainer
+            .append('text')
+            .attr('text-anchor', 'end')
+            .attr('class', 'xLabel')
+            .attr('x', 70)
+            .attr('y', -200)
+            .attr('fill', 'currentColor')
+            .text('Pool Liquidity flows');
 
         // X scale: common for 2 data series
         xScale = d3
