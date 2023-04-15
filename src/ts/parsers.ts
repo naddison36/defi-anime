@@ -23,3 +23,13 @@ export const parsePoolBalances = (
     });
     return balances;
 };
+
+export const parseTimes = (flows: Flow[]): Time[] =>
+    flows.map((flow) => ({
+        timestamp: new Date(flow.timestamp * 1000),
+        block: flow.block,
+        logIndex: flow.logIndex,
+    }));
+
+export const parseExchangeRate = (balance: Balance): BigNumber =>
+    BigNumber(balance[0]).div(balance[1]);

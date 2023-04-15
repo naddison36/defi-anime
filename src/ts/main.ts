@@ -1,6 +1,7 @@
 import '../style.css';
-import { parsePoolBalances } from './parsers';
-import { render } from './reserveProduct';
+import { renderHistoricalRates } from './historicalRates';
+import { parseExchangeRate, parsePoolBalances, parseTimes } from './parsers';
+import { renderReserveProduct } from './reserveProduct';
 import { Flow } from './typings';
 import { getFlows, getReserves } from './uniswap';
 
@@ -35,21 +36,32 @@ function decrementFlow() {
     const startBlock = flows[0].block;
     const balancesStart = await getReserves(poolAddress, startBlock);
     const poolBalances = parsePoolBalances(flows, balancesStart);
+    const exchangeRates = poolBalances.map((bals) => parseExchangeRate(bals));
+    const times = parseTimes(flows);
 
-    const refesh = await render(
+    const updateReserveProduct = await renderReserveProduct(
         tokens,
         poolBalances,
         () => poolBalances[flowIndex],
     );
 
+    const updateHistoricalRates = renderHistoricalRates(
+        times,
+        exchangeRates,
+        () => times[flowIndex],
+        () => exchangeRates[flowIndex],
+    );
+
     const previous = () => {
         decrementFlow();
-        refesh();
+        updateReserveProduct();
+        updateHistoricalRates();
     };
 
     const next = () => {
         incrementFlow();
-        refesh();
+        updateReserveProduct();
+        updateHistoricalRates();
     };
 
     let interval: NodeJS.Timer;

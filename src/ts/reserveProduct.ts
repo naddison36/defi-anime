@@ -9,7 +9,7 @@ const margin = { top: 5, right: 5, bottom: 70, left: 70 },
     height = 400 - margin.top - margin.bottom,
     dotRadius = 5;
 
-export const render = (
+export const renderReserveProduct = (
     tokens: string[],
     balances: Balance[],
     currentBalance: () => Balance,

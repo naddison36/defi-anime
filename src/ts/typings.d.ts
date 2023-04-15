@@ -10,3 +10,9 @@ export interface Flow {
     logIndex: number;
     block: number;
 }
+
+export interface Time {
+    timestamp: Date;
+    block: number;
+    logIndex: number;
+}
