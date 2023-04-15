@@ -29,7 +29,7 @@ Sponsored technologies
 
 ## Installation
 
-Clone this repository and install the dependencies.
+Clone this repository and install the dependencies using yarn.
 
 ```
 git clone git@github.com:naddison36/defi-anime.git
@@ -38,11 +38,13 @@ yarn
 
 ## Local development
 
+Run a local Vite server to see the application
+
 ```bash
 yarn dev
 ```
 
-Will start a local development server on port 5173.
+This will start a local development server on port 5173 by default. It will be a higher port if its already used.
 
 http://localhost:5173/
 
