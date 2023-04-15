@@ -165,11 +165,11 @@ const fetchData = async () => {
             }
             if (selectedOption === 'example3') {
                 startTime = 1681505051;
-                endTime = 1681506143;
+                endTime = 1681507000;
             }
             if (selectedOption === 'example4') {
                 startTime = 1660161306;
-                endTime = 1660161676;
+                endTime = 1660162000;
             }
 
             await fetchData();

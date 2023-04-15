@@ -7,6 +7,7 @@ import { Component, Flow } from './typings';
 const margin = 100,
     width = 440 - 2 * margin,
     height = 440 - 2 * margin,
+    minRadius = 3,
     maxRadius = 30,
     componentId = 'pool_flows';
 
@@ -45,12 +46,12 @@ export const renderPoolFlows = (
         token0SqrtScale = d3
             .scaleSqrt()
             .domain([0, maxFlows[0]])
-            .range([2, maxRadius]);
+            .range([minRadius, maxRadius]);
 
         token1SqrtScale = d3
             .scaleSqrt()
             .domain([0, maxFlows[1]])
-            .range([2, maxRadius]);
+            .range([minRadius, maxRadius]);
 
         componentContainer
             .append('circle')
