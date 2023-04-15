@@ -32,8 +32,10 @@ export const renderReserveProduct = (
         .querySelector<HTMLInputElement>('#zoom')!
         .addEventListener('input', (event: Event) => {
             const zoomLevel = Number((event.target as HTMLInputElement).value);
-            zoomFactor = zoomLevel / 20;
+            zoomFactor = zoomLevel / 10;
             console.log(`zoomFactor ${zoomFactor}`);
+            render();
+            update(false);
         });
 
     const render = () => {
@@ -55,6 +57,7 @@ export const renderReserveProduct = (
             BigNumber(token0Domain[0]).minus(xBuffer).toNumber(),
             BigNumber(token0Domain[1]).plus(xBuffer).toNumber(),
         ];
+        xDomain[0] = xDomain[0] < 0 ? 0 : xDomain[0];
         xScale = d3.scaleLinear().domain(xDomain).range([0, width]);
         componentContainer
             .append('g')
@@ -83,6 +86,7 @@ export const renderReserveProduct = (
             BigNumber(token1Domain[0]).minus(yBuffer).toNumber(),
             BigNumber(token1Domain[1]).plus(yBuffer).toNumber(),
         ];
+        yDomain[0] = yDomain[0] < 0 ? 0 : yDomain[0];
         yScale = d3.scaleLinear().domain(yDomain).range([height, 0]);
         componentContainer.append('g').call(d3.axisLeft(yScale));
 
@@ -126,7 +130,8 @@ export const renderReserveProduct = (
             .attr('fill', '#69b3a2');
     };
 
-    const update = () => {
+    const update = (doTransition: boolean = true) => {
+        const duration = doTransition ? flowDuration() : 0;
         const bal = currentBalance();
         const x = xScale(bal[0]);
         const y = yScale(bal[1]);
@@ -139,7 +144,7 @@ export const renderReserveProduct = (
         componentContainer
             .select('#xyPoint')
             .transition()
-            .duration(flowDuration())
+            .duration(duration)
             .attr('cx', x)
             .attr('cy', y);
 
@@ -150,7 +155,7 @@ export const renderReserveProduct = (
         componentContainer
             .select('#xLine')
             .transition()
-            .duration(flowDuration())
+            .duration(duration)
             .attr('d', xline);
 
         const yLine = d3.line()([
@@ -160,7 +165,7 @@ export const renderReserveProduct = (
         componentContainer
             .select('#yLine')
             .transition()
-            .duration(flowDuration())
+            .duration(duration)
             .attr('d', yLine);
 
         // Calc top left point
@@ -192,7 +197,7 @@ export const renderReserveProduct = (
         componentContainer
             .select('#xyCurve')
             .transition()
-            .duration(flowDuration())
+            .duration(duration)
             .attr('d', xyCurve);
     };
 
