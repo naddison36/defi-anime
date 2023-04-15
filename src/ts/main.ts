@@ -127,6 +127,8 @@ const fetchData = async () => {
         .addEventListener('input', (event: Event) => {
             const speed = Number((event.target as HTMLInputElement).value);
             flowDuration = (-2950 / 99) * speed + 3025;
+            clearInterval(interval);
+            interval = setInterval(next, flowDuration);
             console.log(`flowDuration ${flowDuration}`);
         });
 
