@@ -143,13 +143,13 @@ export const renderPoolFlows = (
                 inFlows
                     .append('circle')
                     .attr('r', token0SqrtScale(flow.in[0]))
-                    .attr('fill', 'blue');
+                    .attr('fill', '#e11d73');
             }
             if (flow.in[1]) {
                 inFlows
                     .append('circle')
                     .attr('r', token1SqrtScale(flow.in[1]))
-                    .attr('fill', 'currentColor');
+                    .attr('fill', '#2670C4');
             }
         }
         if (flow.recipient) {
@@ -183,13 +183,13 @@ export const renderPoolFlows = (
                 outFlows
                     .append('circle')
                     .attr('r', token0SqrtScale(flow.out[0]))
-                    .attr('fill', 'blue');
+                    .attr('fill', '#e11d73');
             }
             if (flow.out[1]) {
                 outFlows
                     .append('circle')
                     .attr('r', token1SqrtScale(flow.out[1]))
-                    .attr('fill', 'currentColor');
+                    .attr('fill', '#2670C4');
             }
         }
     };

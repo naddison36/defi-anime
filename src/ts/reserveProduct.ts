@@ -72,7 +72,7 @@ export const renderReserveProduct = (
             .attr('class', 'xLabel')
             .attr('x', width / 2)
             .attr('y', height + margin.top + margin.bottom - 25)
-            .attr('fill', 'currentColor')
+            .attr('fill', '#2670C4')
             .text(tokens()[0]);
 
         // Add Y axis --> WETH
@@ -95,7 +95,7 @@ export const renderReserveProduct = (
             .attr('transform', 'rotate(-90)')
             .attr('y', -margin.left + 12)
             .attr('x', -margin.top - height / 2)
-            .attr('fill', 'currentColor')
+            .attr('fill', '#e11d73')
             .text(tokens()[1]);
 
         // title label:
