@@ -1,25 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Uniswap USDC/ETH Pool</title>
-    </head>
-    <body>
-        <div id="app">
-            <div style="display: flex; flex-direction: row; gap: 10px">
-                <div id="reserve_product"></div>
-                <div id="pool_flows"></div>
-                <div id="historicalRates"></div>
-            </div>
 
-            <div style="display: flex; flex-direction: row; gap: 10px">
-                <button id="btnPrevious" type="button">Previous</button>
-                <button id="btnNext" type="button">Next</button>
-                <button id="btnStart" type="button">Start</button>
-                <button id="btnStop" type="button">Stop</button>
-            </div>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Uniswap USDC/ETH Pool</title>
+</head>
+
+<body>
+    <div id="app">
+        <div class="slidecontainer">
+            <input type="range" min="1" max="100" value="20" class="slider" id="duration">
         </div>
-        <script type="module" src="/src/ts/main.ts"></script>
-    </body>
+        <div style="display: flex; flex-direction: row; gap: 10px">
+            <div id="reserve_product"></div>
+            <div id="pool_flows"></div>
+            <div id="historicalRates"></div>
+        </div>
+
+        <div style="display: flex; flex-direction: row; gap: 10px">
+            <button id="btnPrevious" type="button">Previous</button>
+            <button id="btnNext" type="button">Next</button>
+            <button id="btnStart" type="button">Start</button>
+            <button id="btnStop" type="button">Stop</button>
+        </div>
+
+        <div>
+            <label for="exampleSelector">Select an option:</label>
+            <select id="exampleSelector">
+                <option value="example1">Option 1</option>
+                <option value="example2">Option 2</option>
+                <option value="example3">Option 3</option>
+            </select>
+        </div>
+    </div>
+    <script type="module" src="/src/ts/main.ts"></script>
+</body>
+
 </html>

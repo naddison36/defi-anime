@@ -12,13 +12,14 @@ import { Flow } from './typings';
 import { getFlows, getReserves } from './uniswap';
 
 // Time in milliseconds between each flow
-export const flowDuration = 500;
+const MIN_DURATION = 10
+export let flowDuration = 500;
 
 // TODO hard code for now. Ideally these would come from UI
-const poolAddress = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
-const tokens = ['USDC', 'WETH'];
-const startTime = 1660152000;
-const endTime = 1660156000;
+let poolAddress = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
+let tokens = ['USDC', 'WETH'];
+let startTime = 1660152000;
+let endTime = 1660154000;
 
 let flows: Flow[];
 let flowIndex = 0;
@@ -100,4 +101,25 @@ function decrementFlow() {
         .addEventListener('click', () => {
             clearInterval(interval);
         });
+
+
+    document
+        .querySelector<HTMLInputElement>('#duration')!
+        .addEventListener('input', (event: Event) => {
+            flowDuration = Number((event.target as HTMLInputElement).value) * MIN_DURATION
+        })
+
+    document
+        .querySelector<HTMLSelectElement>('#exampleSelector')!
+        .addEventListener('change', (event: Event) => {
+            const selectedOption = (event.target as HTMLSelectElement).value;
+            console.log('Selected option: ', selectedOption);
+            if (selectedOption === 'example1') {
+                poolAddress = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
+                tokens = ['USDC', 'WETH'];
+                startTime = 1660152000;
+                endTime = 1660154000;
+            }
+        });
+
 })();
