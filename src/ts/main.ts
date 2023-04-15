@@ -17,7 +17,7 @@ export let flowDuration = 800;
 // TODO hard code for now. Ideally these would come from UI
 const poolAddress = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
 const tokens = ['USDC', 'WETH'];
-let startTime = 1660150000;
+let startTime = 1660153175;
 let endTime = 1660170000;
 
 let flows: Flow[];
@@ -156,7 +156,7 @@ const fetchData = async () => {
             const selectedOption = (event.target as HTMLSelectElement).value;
             console.log('Selected option: ', selectedOption);
             if (selectedOption === 'example1') {
-                startTime = 1660150000;
+                startTime = 1660153175;
                 endTime = 1660170000;
             }
             if (selectedOption === 'example2') {
