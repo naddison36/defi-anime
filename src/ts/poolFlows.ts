@@ -54,7 +54,7 @@ export const renderPoolFlows = (
 
         componentContainer
             .append('circle')
-            .attr('r', width - 2 * margin)
+            .attr('r', width - margin * 1.2)
             .attr('fill', 'none')
             .style('stroke', 'currentColor') // set the color of the stroke
             .style('stroke-width', '1px'); // set the width of the stroke
@@ -153,13 +153,13 @@ export const renderPoolFlows = (
                 inFlows
                     .append('circle')
                     .attr('r', token0SqrtScale(flow.in[0]))
-                    .attr('fill', '#e11d73');
+                    .attr('fill', '#2670C4');
             }
             if (flow.in[1]) {
                 inFlows
                     .append('circle')
                     .attr('r', token1SqrtScale(flow.in[1]))
-                    .attr('fill', '#2670C4');
+                    .attr('fill', '#e11d73');
             }
         }
         if (flow.recipient) {
@@ -193,13 +193,13 @@ export const renderPoolFlows = (
                 outFlows
                     .append('circle')
                     .attr('r', token0SqrtScale(flow.out[0]))
-                    .attr('fill', '#e11d73');
+                    .attr('fill', '#2670C4');
             }
             if (flow.out[1]) {
                 outFlows
                     .append('circle')
                     .attr('r', token1SqrtScale(flow.out[1]))
-                    .attr('fill', '#2670C4');
+                    .attr('fill', '#e11d73');
             }
         }
     };
