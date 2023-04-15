@@ -1,106 +1,134 @@
 import BigNumber from 'bignumber.js';
 import * as d3 from 'd3';
-import { flowDuration } from './main';
-import { Balance } from './typings';
+import { Balance, Component } from './typings';
 
 // set the dimensions and margins of the graph
 const margin = { top: 20, right: 5, bottom: 80, left: 70 },
     width = 400 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom,
-    dotRadius = 5;
+    dotRadius = 5,
+    componentId = 'reserve_product';
 let zoomFactor = 0.1;
 
 export const renderReserveProduct = (
-    tokens: string[],
-    balances: Balance[],
+    flowDuration: () => number,
+    tokens: () => string[],
+    balances: () => Balance[],
     currentBalance: () => Balance,
-): (() => void) => {
-    const svg = d3
-        .select('#reserve_product')
+): Component => {
+    let componentContainer;
+    let xScale;
+    let yScale;
+    let xDomain;
+    let yDomain;
+
+    d3.select('#' + componentId)
         .insert('svg', '#zoomLabel')
+        .attr('id', componentId + '_svg')
         .attr('width', width + margin.left + margin.right)
-        .attr('height', height + margin.top + margin.bottom)
-        .append('g')
-        .attr('transform', `translate(${margin.left},${margin.top})`);
+        .attr('height', height + margin.top + margin.bottom);
 
-    // Add X axis --> Token 0 - USDC
-    const token0Domain = d3.extent(balances, (d) => d[0]);
-    const xDomain = [
-        BigNumber(token0Domain[0])
-            .times(1 - zoomFactor)
-            .toNumber(),
-        BigNumber(token0Domain[1])
-            .times(1 + zoomFactor)
-            .toNumber(),
-    ];
-    const xScale = d3.scaleLinear().domain(xDomain).range([0, width]).nice();
-    svg.append('g')
-        .attr('transform', 'translate(0,' + height + ')')
-        .call(d3.axisBottom(xScale))
-        .selectAll('text')
-        .attr('transform', 'translate(-10,0)rotate(-45)')
-        .style('text-anchor', 'end');
+    document
+        .querySelector<HTMLInputElement>('#zoom')!
+        .addEventListener('input', (event: Event) => {
+            const zoomLevel = Number((event.target as HTMLInputElement).value);
+            zoomFactor = zoomLevel / 20;
+            console.log(`zoomFactor ${zoomFactor}`);
+        });
 
-    // Add X axis label:
-    svg.append('text')
-        .attr('text-anchor', 'end')
-        .attr('class', 'xLabel')
-        .attr('x', width / 2)
-        .attr('y', height + margin.top + margin.bottom - 25)
-        .attr('fill', 'currentColor')
-        .text(tokens[0]);
+    const render = () => {
+        const containerId = componentId + '_container';
+        d3.select('#' + containerId).remove();
 
-    // Add Y axis --> WETH
-    const token1Domain = d3.extent(balances, (d) => d[1]);
-    const yDomain = [
-        BigNumber(token1Domain[0])
-            .times(1 - zoomFactor)
-            .toNumber(),
-        BigNumber(token1Domain[1])
-            .times(1 + zoomFactor)
-            .toNumber(),
-    ];
-    const yScale = d3.scaleLinear().domain(yDomain).range([height, 0]).nice();
-    svg.append('g').call(d3.axisLeft(yScale));
+        componentContainer = d3
+            .select(`#${componentId}_svg`)
+            .append('g')
+            .attr('id', containerId)
+            .attr('transform', `translate(${margin.left},${margin.top})`);
 
-    // Y axis label:
-    svg.append('text')
-        .attr('text-anchor', 'end')
-        .attr('transform', 'rotate(-90)')
-        .attr('y', -margin.left + 12)
-        .attr('x', -margin.top - height / 2)
-        .attr('fill', 'currentColor')
-        .text(tokens[1]);
+        // Add X axis --> Token 0 - USDC
+        const token0Domain = d3.extent(balances(), (d) => d[0]);
+        xDomain = [
+            BigNumber(token0Domain[0])
+                .times(1 - zoomFactor)
+                .toNumber(),
+            BigNumber(token0Domain[1])
+                .times(1 + zoomFactor)
+                .toNumber(),
+        ];
+        xScale = d3.scaleLinear().domain(xDomain).range([0, width]).nice();
+        componentContainer
+            .append('g')
+            .attr('transform', 'translate(0,' + height + ')')
+            .call(d3.axisBottom(xScale))
+            .selectAll('text')
+            .attr('transform', 'translate(-10,0)rotate(-45)')
+            .style('text-anchor', 'end');
 
-    // title label:
-    svg.append('text')
-        .attr('text-anchor', 'end')
-        .attr('class', 'xLabel')
-        .attr('x', width / 2 + 25)
-        .attr('y', margin.top / 2 - 11)
-        .attr('fill', 'currentColor')
-        .text('x * y = k');
+        // Add X axis label:
+        componentContainer
+            .append('text')
+            .attr('text-anchor', 'end')
+            .attr('class', 'xLabel')
+            .attr('x', width / 2)
+            .attr('y', height + margin.top + margin.bottom - 25)
+            .attr('fill', 'currentColor')
+            .text(tokens()[0]);
 
-    // Container for the exchange rate circle and lines to the x and y axis
-    const rate = svg.append('g');
-    rate.append('path')
-        .attr('id', 'xLine')
-        .attr('stroke', 'currentColor')
-        .style('stroke-dasharray', '3 3');
-    rate.append('path')
-        .attr('id', 'yLine')
-        .attr('stroke', 'currentColor')
-        .style('stroke-dasharray', '3 3');
-    rate.append('path')
-        .attr('id', 'xyCurve')
-        .attr('stroke', 'currentColor')
-        .attr('fill', 'none');
-    rate.append('circle')
-        .attr('id', 'xyPoint')
-        .attr('r', dotRadius)
-        .attr('fill', '#69b3a2');
+        // Add Y axis --> WETH
+        const token1Domain = d3.extent(balances(), (d) => d[1]);
+        yDomain = [
+            BigNumber(token1Domain[0])
+                .times(1 - zoomFactor)
+                .toNumber(),
+            BigNumber(token1Domain[1])
+                .times(1 + zoomFactor)
+                .toNumber(),
+        ];
+        yScale = d3.scaleLinear().domain(yDomain).range([height, 0]).nice();
+        componentContainer.append('g').call(d3.axisLeft(yScale));
 
-    const updateReserveProduct = () => {
+        // Y axis label:
+        componentContainer
+            .append('text')
+            .attr('text-anchor', 'end')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', -margin.left + 12)
+            .attr('x', -margin.top - height / 2)
+            .attr('fill', 'currentColor')
+            .text(tokens()[1]);
+
+        // title label:
+        componentContainer
+            .append('text')
+            .attr('text-anchor', 'end')
+            .attr('class', 'xLabel')
+            .attr('x', width / 2 + 25)
+            .attr('y', margin.top / 2 - 11)
+            .attr('fill', 'currentColor')
+            .text('x * y = k');
+
+        // Container for the exchange rate circle and lines to the x and y axis
+        const rate = componentContainer.append('g');
+        rate.append('path')
+            .attr('id', 'xLine')
+            .attr('stroke', 'currentColor')
+            .style('stroke-dasharray', '3 3');
+        rate.append('path')
+            .attr('id', 'yLine')
+            .attr('stroke', 'currentColor')
+            .style('stroke-dasharray', '3 3');
+        rate.append('path')
+            .attr('id', 'xyCurve')
+            .attr('stroke', 'currentColor')
+            .attr('fill', 'none');
+        rate.append('circle')
+            .attr('id', 'xyPoint')
+            .attr('r', dotRadius)
+            .attr('fill', '#69b3a2');
+    };
+
+    const update = () => {
         const bal = currentBalance();
         const x = xScale(bal[0]);
         const y = yScale(bal[1]);
@@ -110,27 +138,32 @@ export const renderReserveProduct = (
         // invariant = x * y
         const invariant = BigNumber(bal[0]).times(bal[1]);
 
-        svg.select('#xyPoint')
+        componentContainer
+            .select('#xyPoint')
             .attr('cx', x)
             .attr('cy', y)
             .transition()
-            .duration(flowDuration);
+            .duration(flowDuration());
+
         const xline = d3.line()([
             [0, y],
             [x, y],
         ]);
-        svg.select('#xLine')
+        componentContainer
+            .select('#xLine')
             .attr('d', xline)
             .transition()
-            .duration(flowDuration);
+            .duration(flowDuration());
+
         const yLine = d3.line()([
             [x, height],
             [x, y],
         ]);
-        svg.select('#yLine')
+        componentContainer
+            .select('#yLine')
             .attr('d', yLine)
             .transition()
-            .duration(flowDuration);
+            .duration(flowDuration());
 
         // Calc top left point
         // min x = k / max y
@@ -158,21 +191,15 @@ export const renderReserveProduct = (
             [x, y],
             [xScale(maxX), yScale(minY)],
         ]);
-        svg.select('#xyCurve')
+        componentContainer
+            .select('#xyCurve')
             .attr('d', xyCurve)
             .transition()
-            .duration(flowDuration);
+            .duration(flowDuration());
     };
 
-    updateReserveProduct();
+    render();
+    update();
 
-    document
-        .querySelector<HTMLInputElement>('#zoom')!
-        .addEventListener('input', (event: Event) => {
-            const zoomLevel = Number((event.target as HTMLInputElement).value);
-            zoomFactor = zoomLevel / 20;
-            console.log(`zoomFactor ${zoomFactor}`);
-        });
-
-    return updateReserveProduct;
+    return { render, update };
 };

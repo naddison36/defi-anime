@@ -8,7 +8,7 @@ import {
 } from './parsers';
 import { renderPoolFlows } from './poolFlows';
 import { renderReserveProduct } from './reserveProduct';
-import { Flow } from './typings';
+import { Balance, Component, Flow, Time } from './typings';
 import { getFlows, getReserves } from './uniswap';
 
 // Time in milliseconds between each flow
@@ -21,56 +21,76 @@ let startTime = 1660150000;
 let endTime = 1660170000;
 
 let flows: Flow[];
+let poolBalances: Balance[];
+let times: Time[];
+let shortAddresses: string[];
+
 let flowIndex = 0;
-function incrementFlow() {
+const incrementFlow = () => {
     if (flowIndex < flows.length - 1) {
         flowIndex++;
     } else {
         flowIndex = 0;
     }
-}
-function decrementFlow() {
+};
+const decrementFlow = () => {
     if (flowIndex > 0) {
         flowIndex--;
     } else {
         flowIndex = flows.length - 1;
     }
-}
+};
 
-(async () => {
+let reserveProduct: Component,
+    historicalRates: Component,
+    updatePoolFlow: Component;
+
+const updateAll = () => {
+    reserveProduct.update();
+    historicalRates.update();
+    updatePoolFlow.update();
+};
+
+const renderAll = () => {
+    reserveProduct.render();
+    historicalRates.render();
+    updatePoolFlow.render();
+};
+
+const fetchData = async () => {
     flows = await getFlows(poolAddress, startTime, endTime);
-    const { accountsFlows, accounts } = parseAccountsFlows(flows);
-    const shortAddresses = shortenAddresses(accounts);
+    const { accounts } = parseAccountsFlows(flows);
+    shortAddresses = shortenAddresses(accounts);
 
     const startBlock = flows[0].block;
     const balancesStart = await getReserves(poolAddress, startBlock);
-    const poolBalances = parsePoolBalances(flows, balancesStart);
-    const times = parseTimes(flows);
+    poolBalances = parsePoolBalances(flows, balancesStart);
+    times = parseTimes(flows);
+};
 
-    const updateReserveProduct = await renderReserveProduct(
-        tokens,
-        poolBalances,
+(async () => {
+    await fetchData();
+
+    reserveProduct = renderReserveProduct(
+        () => flowDuration,
+        () => tokens,
+        () => poolBalances,
         () => poolBalances[flowIndex],
     );
 
-    const updateHistoricalRates = renderHistoricalRates(
-        times,
-        poolBalances,
+    historicalRates = renderHistoricalRates(
+        () => flowDuration,
+        () => times,
+        () => poolBalances,
         () => flows[flowIndex],
         () => poolBalances[flowIndex],
     );
 
-    const updatePoolFlow = await renderPoolFlows(
-        shortAddresses,
-        flows,
+    updatePoolFlow = renderPoolFlows(
+        () => shortAddresses,
+        () => flows,
         () => flows[flowIndex],
     );
-
-    const updateAll = () => {
-        updateReserveProduct();
-        updateHistoricalRates();
-        updatePoolFlow();
-    };
 
     const previous = () => {
         decrementFlow();
@@ -111,7 +131,7 @@ function decrementFlow() {
 
     document
         .querySelector<HTMLSelectElement>('#exampleSelector')!
-        .addEventListener('change', (event: Event) => {
+        .addEventListener('change', async (event: Event) => {
             const selectedOption = (event.target as HTMLSelectElement).value;
             console.log('Selected option: ', selectedOption);
             if (selectedOption === 'example1') {
@@ -119,6 +139,20 @@ function decrementFlow() {
                 tokens = ['USDC', 'WETH'];
                 startTime = 1660152000;
                 endTime = 1660154000;
+
+                await fetchData();
+                renderAll();
+                updateAll();
+            }
+            if (selectedOption === 'example2') {
+                poolAddress = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
+                tokens = ['USDC', 'WETH'];
+                startTime = 1681507271;
+                endTime = 1681507271;
+
+                await fetchData();
+                renderAll();
+                updateAll();
             }
         });
 })();

@@ -28,3 +28,8 @@ export interface AccountFlow {
 export declare type AccountsFlow = AccountFlow[];
 // An array of AccountFlows for each time point
 export declare type AccountsFlows = AccountsFlow[];
+
+export interface Component {
+    render: () => void;
+    update: () => void;
+}
