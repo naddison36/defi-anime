@@ -12,11 +12,11 @@ import { Balance, Component, Flow, Time } from './typings';
 import { getFlows, getReserves } from './uniswap';
 
 // Time in milliseconds between each flow
-export let flowDuration = 500;
+export let flowDuration = 800;
 
 // TODO hard code for now. Ideally these would come from UI
-let poolAddress = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
-let tokens = ['USDC', 'WETH'];
+const poolAddress = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
+const tokens = ['USDC', 'WETH'];
 let startTime = 1660150000;
 let endTime = 1660170000;
 
@@ -107,10 +107,16 @@ const fetchData = async () => {
 
     document
         .querySelector<HTMLButtonElement>('#btnPrevious')!
-        .addEventListener('click', previous);
+        .addEventListener('click', () => {
+            clearInterval(interval);
+            previous();
+        });
     document
         .querySelector<HTMLButtonElement>('#btnNext')!
-        .addEventListener('click', next);
+        .addEventListener('click', () => {
+            clearInterval(interval);
+            next();
+        });
     document
         .querySelector<HTMLButtonElement>('#btnStart')!
         .addEventListener('click', () => {
@@ -141,20 +147,21 @@ const fetchData = async () => {
             const selectedOption = (event.target as HTMLSelectElement).value;
             console.log('Selected option: ', selectedOption);
             if (selectedOption === 'example1') {
-                poolAddress = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
-                tokens = ['USDC', 'WETH'];
                 startTime = 1660150000;
                 endTime = 1660170000;
             }
             if (selectedOption === 'example2') {
-                poolAddress = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
-                tokens = ['USDC', 'WETH'];
                 startTime = 1681507271;
                 endTime = 1681507300;
+            }
+            if (selectedOption === 'example3') {
+                startTime = 1681505051;
+                endTime = 1681506143;
             }
 
             await fetchData();
             renderAll();
-            updateAll();
+            reserveProduct.update();
+            // updateAll();
         });
 })();

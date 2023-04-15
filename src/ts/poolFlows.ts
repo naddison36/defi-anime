@@ -195,7 +195,6 @@ export const renderPoolFlows = (
     };
 
     render();
-    update();
 
     return { update, render };
 };
