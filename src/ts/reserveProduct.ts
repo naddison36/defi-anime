@@ -189,11 +189,28 @@ export const renderReserveProduct = (
         }
 
         // Draw the xy curve the rate moves along
-        const xyCurve = d3.line().curve(d3.curveCatmullRom.alpha(1))([
-            [xScale(minX), yScale(maxY)],
-            [x, y],
-            [xScale(maxX), yScale(minY)],
-        ]);
+        // TODO change to proper x * y = k curve
+        const xyLine = d3
+            .line()
+            .x((d) => xScale(d[0]))
+            .y((d) => yScale(d[1]));
+        const leftPointStep = BigNumber(bal[0]).minus(minX).div(100).toNumber();
+        const rightPointStep = BigNumber(maxX)
+            .minus(bal[0])
+            .div(100)
+            .toNumber();
+        const xPoints = [
+            ...d3.range(minX, bal[0], leftPointStep),
+            ...d3.range(bal[0], maxX, rightPointStep),
+        ];
+        const xyPoints = xPoints.map(
+            (xPoint) =>
+                [
+                    xPoint,
+                    BigNumber(bal[0]).times(bal[1]).div(xPoint).toNumber(),
+                ] as [number, number],
+        );
+        const xyCurve = xyLine(xyPoints);
         componentContainer
             .select('#xyCurve')
             .transition()
