@@ -66,7 +66,14 @@ export const parseMaxFlows = (flows: Flow[]): [number, number] => {
 
 export const parseAddresses = (flows: Flow[]) => {
     const addresses = new Set<string>();
-    flows.forEach((f) => addresses.add(f.sender));
+    flows.forEach((f) => {
+        if (f.sender) {
+            addresses.add(f.sender);
+        }
+        if (f.recipient) {
+            addresses.add(f.recipient);
+        }
+    });
     const sortedAddresses = Array.from(addresses).sort();
     console.log(
         `Got ${sortedAddresses.length} addresses from ${flows.length} flows`,

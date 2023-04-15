@@ -4,9 +4,9 @@ import { parseMaxFlows, shortenAddress } from './parsers';
 import { Component, Flow } from './typings';
 
 // set the dimensions and margins of the graph
-const margin = { top: 100, right: 100, bottom: 100, left: 100 },
-    width = 400 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom,
+const margin = 80,
+    width = 440 - 2 * margin,
+    height = 440 - 2 * margin,
     maxRadius = 30,
     componentId = 'pool_flows';
 
@@ -24,8 +24,8 @@ export const renderPoolFlows = (
     d3.select('#' + componentId)
         .append('svg')
         .attr('id', componentId + '_svg')
-        .attr('width', width + margin.left + margin.right)
-        .attr('height', height + margin.top + margin.bottom);
+        .attr('width', width + 2 * margin)
+        .attr('height', height + 2 * margin);
 
     const render = () => {
         const containerId = componentId + '_container';
@@ -37,9 +37,7 @@ export const renderPoolFlows = (
             .attr('id', containerId)
             .attr(
                 'transform',
-                `translate(${width / 2 + margin.left}, ${
-                    height / 2 + margin.top
-                })`,
+                `translate(${width / 2 + margin}, ${height / 2 + margin})`,
             );
 
         const maxFlows = parseMaxFlows(flows());
@@ -56,7 +54,7 @@ export const renderPoolFlows = (
 
         componentContainer
             .append('circle')
-            .attr('r', width - margin.left - margin.right)
+            .attr('r', width - 2 * margin)
             .attr('fill', 'none')
             .style('stroke', 'currentColor') // set the color of the stroke
             .style('stroke-width', '1px'); // set the width of the stroke
@@ -107,57 +105,73 @@ export const renderPoolFlows = (
 
     const update = () => {
         const flow = currentFlow();
-        const shortAddress = shortenAddress(flow.sender);
+        console.log(`${flow.type} ${flow.sender} -> ${flow.recipient}`);
 
-        // Inbound flows
-        const inFlows = componentContainer.append('g').attr('transform', () => {
-            return (
-                'rotate(' +
-                (((xScale(shortAddress) + xScale.bandwidth() / 2) * 180) /
-                    Math.PI -
-                    90) +
-                ')' +
-                `translate(${width / 2 - 20},0)`
-            );
-        });
-        inFlows
-            .transition()
-            .duration(flowDuration)
-            .attr('transform', 'translate(0,0)')
-            .remove();
-        inFlows
-            .append('circle')
-            .attr('r', token0SqrtScale(flow.in[0]))
-            .attr('fill', 'blue');
-        inFlows
-            .append('circle')
-            .attr('r', token1SqrtScale(flow.in[1]))
-            .attr('fill', 'currentColor');
+        if (flow.sender) {
+            const inAddress = shortenAddress(flow.sender);
+            // Inbound flows
+            const inFlows = componentContainer
+                .append('g')
+                .attr('transform', () => {
+                    return (
+                        'rotate(' +
+                        (((xScale(inAddress) + xScale.bandwidth() / 2) * 180) /
+                            Math.PI -
+                            90) +
+                        ')' +
+                        `translate(${width / 2 - 20},0)`
+                    );
+                });
+            inFlows
+                .transition()
+                .duration(flowDuration)
+                .attr('transform', 'translate(0,0)')
+                .remove();
+            if (flow.in[0]) {
+                inFlows
+                    .append('circle')
+                    .attr('r', token0SqrtScale(flow.in[0]))
+                    .attr('fill', 'blue');
+            }
+            if (flow.in[1]) {
+                inFlows
+                    .append('circle')
+                    .attr('r', token1SqrtScale(flow.in[1]))
+                    .attr('fill', 'currentColor');
+            }
+        }
+        if (flow.recipient) {
+            const outAddress = shortenAddress(flow.recipient);
 
-        // Outbound flows
-        const outFlows = componentContainer.append('g');
-        outFlows
-            .transition()
-            .duration(flowDuration)
-            .attr('transform', () => {
-                return (
-                    'rotate(' +
-                    (((xScale(shortAddress) + xScale.bandwidth() / 2) * 180) /
-                        Math.PI -
-                        90) +
-                    ')' +
-                    `translate(${width / 2 - 20},0)`
-                );
-            })
-            .remove();
-        outFlows
-            .append('circle')
-            .attr('r', token0SqrtScale(flow.out[0]))
-            .attr('fill', 'blue');
-        outFlows
-            .append('circle')
-            .attr('r', token1SqrtScale(flow.out[1]))
-            .attr('fill', 'currentColor');
+            // Outbound flows
+            const outFlows = componentContainer.append('g');
+            outFlows
+                .transition()
+                .duration(flowDuration)
+                .attr('transform', () => {
+                    return (
+                        'rotate(' +
+                        (((xScale(outAddress) + xScale.bandwidth() / 2) * 180) /
+                            Math.PI -
+                            90) +
+                        ')' +
+                        `translate(${width / 2 - 20},0)`
+                    );
+                })
+                .remove();
+            if (flow.out[0]) {
+                outFlows
+                    .append('circle')
+                    .attr('r', token0SqrtScale(flow.out[0]))
+                    .attr('fill', 'blue');
+            }
+            if (flow.out[1]) {
+                outFlows
+                    .append('circle')
+                    .attr('r', token1SqrtScale(flow.out[1]))
+                    .attr('fill', 'currentColor');
+            }
+        }
     };
 
     render();

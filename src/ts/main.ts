@@ -32,6 +32,7 @@ const incrementFlow = () => {
     } else {
         flowIndex = 0;
     }
+    console.log(`flowIndex: ${flowIndex}`);
 };
 const decrementFlow = () => {
     if (flowIndex > 0) {
@@ -137,22 +138,18 @@ const fetchData = async () => {
             if (selectedOption === 'example1') {
                 poolAddress = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
                 tokens = ['USDC', 'WETH'];
-                startTime = 1660152000;
-                endTime = 1660154000;
-
-                await fetchData();
-                renderAll();
-                updateAll();
+                startTime = 1660150000;
+                endTime = 1660170000;
             }
             if (selectedOption === 'example2') {
                 poolAddress = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
                 tokens = ['USDC', 'WETH'];
                 startTime = 1681507271;
-                endTime = 1681507271;
-
-                await fetchData();
-                renderAll();
-                updateAll();
+                endTime = 1681507300;
             }
+
+            await fetchData();
+            renderAll();
+            updateAll();
         });
 })();
