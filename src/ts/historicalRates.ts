@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import { parseExchangeRate, parseInvariant } from './parsers';
 import { Balance, Component, Flow, Time } from './typings';
 
-const margin = { top: 20, right: 75, bottom: 80, left: 50 },
+const margin = { top: 20, right: 80, bottom: 80, left: 67 },
     width = 450 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom,
     componentId = 'historicalRates';
@@ -84,7 +84,7 @@ export const renderHistoricalRates = (
             .append('text')
             .attr('text-anchor', 'end')
             .attr('transform', 'rotate(-90)')
-            .attr('y', -margin.left + 12)
+            .attr('y', -margin.left + 13)
             .attr('x', -margin.top - height / 3)
             .attr('fill', 'currentColor')
             .attr('color', 'orange')
