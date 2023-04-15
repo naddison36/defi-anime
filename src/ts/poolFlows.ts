@@ -112,21 +112,33 @@ export const renderPoolFlows = (
             // Inbound flows
             const inFlows = componentContainer
                 .append('g')
-                .attr('transform', () => {
-                    return (
+                // Start at the outer edge of the circle
+                .attr(
+                    'transform',
+                    () =>
                         'rotate(' +
                         (((xScale(inAddress) + xScale.bandwidth() / 2) * 180) /
                             Math.PI -
                             90) +
-                        ')' +
-                        `translate(${width / 2 - 20},0)`
-                    );
-                });
-            inFlows
-                .transition()
-                .duration(flowDuration)
-                .attr('transform', 'translate(0,0)')
-                .remove();
+                        `)translate(${width / 2 - 20},0)`,
+                );
+            // Transition to the center of the circle
+            if (flow.type === 'Mint') {
+                inFlows
+                    .transition()
+                    .duration(flowDuration)
+                    .attr('transform', 'translate(0,0)')
+                    .remove();
+            } else {
+                // must be a Swap so do it in half the time so the outflow can follow
+                inFlows
+                    .transition()
+                    .duration(flowDuration / 2)
+                    .attr('transform', 'translate(0,0)')
+                    .transition()
+                    .duration(flowDuration / 2)
+                    .remove();
+            }
             if (flow.in[0]) {
                 inFlows
                     .append('circle')
@@ -145,20 +157,28 @@ export const renderPoolFlows = (
 
             // Outbound flows
             const outFlows = componentContainer.append('g');
-            outFlows
-                .transition()
-                .duration(flowDuration)
-                .attr('transform', () => {
-                    return (
-                        'rotate(' +
-                        (((xScale(outAddress) + xScale.bandwidth() / 2) * 180) /
-                            Math.PI -
-                            90) +
-                        ')' +
-                        `translate(${width / 2 - 20},0)`
-                    );
-                })
-                .remove();
+            const transformFn = () =>
+                'rotate(' +
+                (((xScale(outAddress) + xScale.bandwidth() / 2) * 180) /
+                    Math.PI -
+                    90) +
+                `)translate(${width / 2 - 20},0)`;
+            if (flow.type === 'Burn') {
+                outFlows
+                    .transition()
+                    .duration(flowDuration)
+                    .attr('transform', transformFn)
+                    .remove();
+            } else {
+                // Must be a swap so delay the transition by half the duration
+                // before doing the transaction from the centre to the outside circle in half the duration
+                outFlows
+                    .transition()
+                    .delay(flowDuration / 2)
+                    .duration(flowDuration / 2)
+                    .attr('transform', transformFn)
+                    .remove();
+            }
             if (flow.out[0]) {
                 outFlows
                     .append('circle')
