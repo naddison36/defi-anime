@@ -7,7 +7,7 @@ import { Flow } from './typings';
 const margin = { top: 100, right: 100, bottom: 100, left: 100 },
     width = 400 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom,
-    maxRadius = 50;
+    maxRadius = 30;
 
 export const renderPoolFlows = (
     accounts: string[],
@@ -19,12 +19,12 @@ export const renderPoolFlows = (
     const token0SqrtScale = d3
         .scaleSqrt()
         .domain([0, maxFlows[0]])
-        .range([0, maxRadius]);
+        .range([2, maxRadius]);
 
     const token1SqrtScale = d3
         .scaleSqrt()
         .domain([0, maxFlows[1]])
-        .range([0, maxRadius]);
+        .range([2, maxRadius]);
 
     // append the svg object
     const svg = d3

@@ -8,6 +8,7 @@ const margin = { top: 20, right: 5, bottom: 80, left: 70 },
     width = 400 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom,
     dotRadius = 5;
+let zoomFactor = 0.1;
 
 export const renderReserveProduct = (
     tokens: string[],
@@ -16,19 +17,23 @@ export const renderReserveProduct = (
 ): (() => void) => {
     const svg = d3
         .select('#reserve_product')
-        .append('svg')
+        .insert('svg', '#zoomLabel')
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
         .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
     // Add X axis --> Token 0 - USDC
-    const token0Domain = d3.extent(balances, (d) => d[0]) as [number, number];
-    const xScale = d3
-        .scaleLinear()
-        .domain(token0Domain)
-        .range([0, width])
-        .nice();
+    const token0Domain = d3.extent(balances, (d) => d[0]);
+    const xDomain = [
+        BigNumber(token0Domain[0])
+            .times(1 - zoomFactor)
+            .toNumber(),
+        BigNumber(token0Domain[1])
+            .times(1 + zoomFactor)
+            .toNumber(),
+    ];
+    const xScale = d3.scaleLinear().domain(xDomain).range([0, width]).nice();
     svg.append('g')
         .attr('transform', 'translate(0,' + height + ')')
         .call(d3.axisBottom(xScale))
@@ -46,12 +51,16 @@ export const renderReserveProduct = (
         .text(tokens[0]);
 
     // Add Y axis --> WETH
-    const token1Domain = d3.extent(balances, (d) => d[1]) as [number, number];
-    const yScale = d3
-        .scaleLinear()
-        .domain(token1Domain)
-        .range([height, 0])
-        .nice();
+    const token1Domain = d3.extent(balances, (d) => d[1]);
+    const yDomain = [
+        BigNumber(token1Domain[0])
+            .times(1 - zoomFactor)
+            .toNumber(),
+        BigNumber(token1Domain[1])
+            .times(1 + zoomFactor)
+            .toNumber(),
+    ];
+    const yScale = d3.scaleLinear().domain(yDomain).range([height, 0]).nice();
     svg.append('g').call(d3.axisLeft(yScale));
 
     // Y axis label:
@@ -82,7 +91,10 @@ export const renderReserveProduct = (
         .attr('id', 'yLine')
         .attr('stroke', 'currentColor')
         .style('stroke-dasharray', '3 3');
-    rate.append('path').attr('id', 'xyCurve').attr('stroke', 'currentColor');
+    rate.append('path')
+        .attr('id', 'xyCurve')
+        .attr('stroke', 'currentColor')
+        .attr('fill', 'none');
     rate.append('circle')
         .attr('id', 'xyPoint')
         .attr('r', dotRadius)
@@ -122,20 +134,20 @@ export const renderReserveProduct = (
 
         // Calc top left point
         // min x = k / max y
-        let maxY = token1Domain[1];
+        let maxY = yDomain[1];
         let minX = invariant.div(maxY).toNumber();
-        if (minX < token0Domain[0]) {
-            minX = token0Domain[0];
+        if (minX < xDomain[0]) {
+            minX = xDomain[0];
             // max y = invariant / min x
             maxY = invariant.div(minX).toNumber();
         }
 
         // Calc bottom right point
         // min y = invariant / max x
-        let maxX = token0Domain[1];
+        let maxX = xDomain[1];
         let minY = invariant.div(maxX).toNumber();
-        if (minY < token1Domain[0]) {
-            minY = token1Domain[0];
+        if (minY < yDomain[0]) {
+            minY = yDomain[0];
             // max x = invariant \ min y
             maxX = invariant.div(minY).toNumber();
         }
@@ -153,6 +165,14 @@ export const renderReserveProduct = (
     };
 
     updateReserveProduct();
+
+    document
+        .querySelector<HTMLInputElement>('#zoom')!
+        .addEventListener('input', (event: Event) => {
+            const zoomLevel = Number((event.target as HTMLInputElement).value);
+            zoomFactor = zoomLevel / 20;
+            console.log(`zoomFactor ${zoomFactor}`);
+        });
 
     return updateReserveProduct;
 };

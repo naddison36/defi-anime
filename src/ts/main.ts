@@ -12,14 +12,13 @@ import { Flow } from './typings';
 import { getFlows, getReserves } from './uniswap';
 
 // Time in milliseconds between each flow
-const MIN_DURATION = 10
 export let flowDuration = 500;
 
 // TODO hard code for now. Ideally these would come from UI
 let poolAddress = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
 let tokens = ['USDC', 'WETH'];
-let startTime = 1660152000;
-let endTime = 1660154000;
+let startTime = 1660150000;
+let endTime = 1660170000;
 
 let flows: Flow[];
 let flowIndex = 0;
@@ -102,12 +101,13 @@ function decrementFlow() {
             clearInterval(interval);
         });
 
-
     document
         .querySelector<HTMLInputElement>('#duration')!
         .addEventListener('input', (event: Event) => {
-            flowDuration = Number((event.target as HTMLInputElement).value) * MIN_DURATION
-        })
+            const speed = Number((event.target as HTMLInputElement).value);
+            flowDuration = (-2950 / 99) * speed + 3025;
+            console.log(`flowDuration ${flowDuration}`);
+        });
 
     document
         .querySelector<HTMLSelectElement>('#exampleSelector')!
@@ -121,5 +121,4 @@ function decrementFlow() {
                 endTime = 1660154000;
             }
         });
-
 })();
