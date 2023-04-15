@@ -84,11 +84,11 @@ export const renderHistoricalRates = (
             .append('text')
             .attr('text-anchor', 'end')
             .attr('transform', 'rotate(-90)')
-            .attr('y', -margin.left + 10)
+            .attr('y', -margin.left + 12)
             .attr('x', -margin.top - height / 3)
             .attr('fill', 'currentColor')
             .attr('color', 'orange')
-            .text('Inveriant');
+            .text('Inveriant (1e12)');
 
         // Y axis label 2:
         componentContainer
