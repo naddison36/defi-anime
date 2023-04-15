@@ -105,7 +105,7 @@ export const renderPoolFlows = (
 
     const update = () => {
         const flow = currentFlow();
-        console.log(`${flow.type} ${flow.sender} -> ${flow.recipient}`);
+        console.log(`${flow.type} block ${flow.block}`);
 
         if (flow.sender) {
             const inAddress = shortenAddress(flow.sender);

@@ -66,6 +66,15 @@ const fetchData = async () => {
     const startBlock = flows[0].block;
     const balancesStart = await getReserves(poolAddress, startBlock);
     poolBalances = parsePoolBalances(flows, balancesStart);
+    flows.unshift({
+        type: 'Swap',
+        in: [0, 0],
+        out: [0, 0],
+        timestamp: startTime,
+        sender: flows[0].sender,
+        logIndex: 0,
+        block: startBlock,
+    });
     times = parseTimes(flows);
 };
 
@@ -157,6 +166,10 @@ const fetchData = async () => {
             if (selectedOption === 'example3') {
                 startTime = 1681505051;
                 endTime = 1681506143;
+            }
+            if (selectedOption === 'example4') {
+                startTime = 1660161306;
+                endTime = 1660161676;
             }
 
             await fetchData();
