@@ -1,6 +1,6 @@
 import '../style.css';
 import { renderHistoricalRates } from './historicalRates';
-import { parseExchangeRate, parsePoolBalances, parseTimes } from './parsers';
+import { parsePoolBalances, parseTimes } from './parsers';
 import { renderReserveProduct } from './reserveProduct';
 import { Flow } from './typings';
 import { getFlows, getReserves } from './uniswap';
@@ -36,7 +36,6 @@ function decrementFlow() {
     const startBlock = flows[0].block;
     const balancesStart = await getReserves(poolAddress, startBlock);
     const poolBalances = parsePoolBalances(flows, balancesStart);
-    const exchangeRates = poolBalances.map((bals) => parseExchangeRate(bals));
     const times = parseTimes(flows);
 
     const updateReserveProduct = await renderReserveProduct(
@@ -47,9 +46,9 @@ function decrementFlow() {
 
     const updateHistoricalRates = renderHistoricalRates(
         times,
-        exchangeRates,
-        () => times[flowIndex],
-        () => exchangeRates[flowIndex],
+        poolBalances,
+        () => flows[flowIndex],
+        () => poolBalances[flowIndex],
     );
 
     const previous = () => {

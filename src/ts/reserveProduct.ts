@@ -136,13 +136,13 @@ export const renderReserveProduct = (
         }
 
         // Draw the xy curve the rate moves along
-        const line = d3.line().curve(d3.curveCatmullRom.alpha(1))([
+        const xyCurve = d3.line().curve(d3.curveCatmullRom.alpha(1))([
             [xScale(minX), yScale(maxY)],
             [x, y],
             [xScale(maxX), yScale(minY)],
         ]);
         svg.select('#xyCurve')
-            .attr('d', line)
+            .attr('d', xyCurve)
             .transition()
             .duration(flowDuration);
     };

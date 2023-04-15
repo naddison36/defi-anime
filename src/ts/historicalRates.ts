@@ -1,9 +1,9 @@
-import BigNumber from 'bignumber.js';
 import * as d3 from 'd3';
-import { Time } from './typings';
+import { parseExchangeRate, parseInvariant } from './parsers';
+import { Balance, Flow, Time } from './typings';
 
-const margin = { top: 10, right: 50, bottom: 70, left: 40 },
-    width = 400 - margin.left - margin.right,
+const margin = { top: 10, right: 50, bottom: 70, left: 120 },
+    width = 500 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
 /**
@@ -15,9 +15,9 @@ const margin = { top: 10, right: 50, bottom: 70, left: 40 },
 export const renderHistoricalRates = (
     // tokens: string[],
     times: Time[],
-    exchangeRates: BigNumber[],
-    currentTime: () => Time,
-    currentExchangeRate: () => BigNumber,
+    poolBalances: Balance[],
+    currentFlow: () => Flow,
+    currentBalance: () => Balance,
 ): (() => void) => {
     // add SVG to the page
     const svg = d3
@@ -41,50 +41,86 @@ export const renderHistoricalRates = (
         .attr('transform', 'translate(-10,0)rotate(-45)')
         .style('text-anchor', 'end');
 
-    const ratesDomain = d3.extent(exchangeRates.map((rate) => rate.toNumber()));
-    const yScale = d3
+    // Historical exchange rate (price)
+    const ratesDomain = d3.extent(
+        poolBalances.map((bals) => parseExchangeRate(bals).toNumber()),
+    );
+    const priceScale = d3
         .scaleLinear()
         .domain(ratesDomain)
         .range([height, 0])
         .nice();
     svg.append('g')
         .attr('transform', `translate(${width}, 0)`)
-        .call(d3.axisRight(yScale));
-
-    const pricesLine = svg
+        .call(d3.axisRight(priceScale));
+    const pricesLineContainer = svg
         .append('path')
         .style('fill', 'none')
         .attr('id', 'historicalPrices')
         .attr('stroke', '#69b3a2')
         .attr('stroke-width', '1.5');
 
+    // Historical exchange rate (price)
+    const invariantDomain = d3.extent(
+        poolBalances.map((bals) => parseInvariant(bals).toNumber()),
+    );
+    const invariantScale = d3
+        .scaleLinear()
+        .domain(invariantDomain)
+        .range([height, 0])
+        .nice();
+    svg.append('g')
+        .attr('transform', `translate(${0}, 0)`)
+        .call(d3.axisLeft(invariantScale));
+    const invariantLineContainer = svg
+        .append('path')
+        .style('fill', 'none')
+        .attr('id', 'historicalInvariants')
+        .attr('stroke', 'orange')
+        .attr('stroke-width', '1.5');
+
     let historicalRates: [number, number][] = [];
+    let historicalInvariants: [number, number][] = [];
     let lastTime;
 
     const updateHistoricalRates = () => {
-        const time = currentTime();
-        const exchangeRate = currentExchangeRate();
+        const flow = currentFlow();
+        const balance = currentBalance();
+        const exchangeRate = parseExchangeRate(balance);
+        const invariant = parseInvariant(balance);
 
         if (
             lastTime &&
-            (time.block < lastTime.block ||
-                (time.block === lastTime.block &&
-                    time.logIndex < lastTime.logIndex))
+            (flow.block < lastTime.block ||
+                (flow.block === lastTime.block &&
+                    flow.logIndex < lastTime.logIndex))
         ) {
             historicalRates = [];
+            historicalInvariants = [];
             lastTime = undefined;
-            pricesLine.select('d').remove();
+            pricesLineContainer.select('d').remove();
         } else {
-            lastTime = time;
-            historicalRates.push([time.block, exchangeRate.toNumber()]);
+            lastTime = flow;
+            historicalRates.push([flow.block, exchangeRate.toNumber()]);
+            historicalInvariants.push([flow.block, invariant.toNumber()]);
 
-            // generates close price line chart when called
-            const line = d3
+            // generates price line
+            const priceLine = d3
                 .line()
+                .curve(d3.curveStep)
                 .x((d) => blockScale(d[0]))
-                .y((d) => yScale(d[1]));
-            // Append the path and bind data
-            pricesLine.data([historicalRates]).attr('d', line);
+                .y((d) => priceScale(d[1]));
+            pricesLineContainer.data([historicalRates]).attr('d', priceLine);
+
+            // generates invariant line
+            const invariantLine = d3
+                .line()
+                .curve(d3.curveStep)
+                .x((d) => blockScale(d[0]))
+                .y((d) => invariantScale(d[1]));
+            invariantLineContainer
+                .data([historicalInvariants])
+                .attr('d', invariantLine);
         }
     };
 

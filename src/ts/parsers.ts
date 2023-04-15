@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { Balance, Flow } from './typings';
+import { Balance, Flow, Time } from './typings';
 
 export const parsePoolBalances = (
     flows: Flow[],
@@ -33,3 +33,6 @@ export const parseTimes = (flows: Flow[]): Time[] =>
 
 export const parseExchangeRate = (balance: Balance): BigNumber =>
     BigNumber(balance[0]).div(balance[1]);
+
+export const parseInvariant = (balance: Balance): BigNumber =>
+    BigNumber(balance[0]).times(balance[1]);
