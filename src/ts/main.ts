@@ -171,6 +171,10 @@ const fetchData = async () => {
                 startTime = 1660161306;
                 endTime = 1660162000;
             }
+            if (selectedOption === 'example5') {
+                startTime = 1660153175;
+                endTime = 1660160589;
+            }
 
             await fetchData();
             renderAll();
