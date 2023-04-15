@@ -60,8 +60,7 @@ export const renderHistoricalRates = (
         blockScale = d3
             .scaleLinear()
             .domain(d3.extent(times(), (d) => d.block))
-            .range([0, width])
-            .nice();
+            .range([0, width]);
         componentContainer
             .append('g')
             .attr('transform', 'translate(0,' + height + ')')
@@ -106,11 +105,7 @@ export const renderHistoricalRates = (
         const ratesDomain = d3.extent(
             poolBalances().map((bals) => parseExchangeRate(bals).toNumber()),
         );
-        priceScale = d3
-            .scaleLinear()
-            .domain(ratesDomain)
-            .range([height, 0])
-            .nice();
+        priceScale = d3.scaleLinear().domain(ratesDomain).range([height, 0]);
         componentContainer
             .append('g')
             .attr('transform', `translate(${width}, 0)`)

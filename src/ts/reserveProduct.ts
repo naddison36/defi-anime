@@ -8,7 +8,7 @@ const margin = { top: 20, right: 5, bottom: 80, left: 70 },
     height = 400 - margin.top - margin.bottom,
     dotRadius = 5,
     componentId = 'reserve_product';
-let zoomFactor = 0.1;
+let zoomFactor = 0.2;
 
 export const renderReserveProduct = (
     flowDuration: () => number,
@@ -48,15 +48,14 @@ export const renderReserveProduct = (
 
         // Add X axis --> Token 0 - USDC
         const token0Domain = d3.extent(balances(), (d) => d[0]);
+        const xBuffer = BigNumber(token0Domain[1])
+            .minus(token0Domain[0])
+            .times(zoomFactor);
         xDomain = [
-            BigNumber(token0Domain[0])
-                .times(1 - zoomFactor)
-                .toNumber(),
-            BigNumber(token0Domain[1])
-                .times(1 + zoomFactor)
-                .toNumber(),
+            BigNumber(token0Domain[0]).minus(xBuffer).toNumber(),
+            BigNumber(token0Domain[1]).plus(xBuffer).toNumber(),
         ];
-        xScale = d3.scaleLinear().domain(xDomain).range([0, width]).nice();
+        xScale = d3.scaleLinear().domain(xDomain).range([0, width]);
         componentContainer
             .append('g')
             .attr('transform', 'translate(0,' + height + ')')
@@ -77,15 +76,14 @@ export const renderReserveProduct = (
 
         // Add Y axis --> WETH
         const token1Domain = d3.extent(balances(), (d) => d[1]);
+        const yBuffer = BigNumber(token1Domain[1])
+            .minus(token1Domain[0])
+            .times(zoomFactor);
         yDomain = [
-            BigNumber(token1Domain[0])
-                .times(1 - zoomFactor)
-                .toNumber(),
-            BigNumber(token1Domain[1])
-                .times(1 + zoomFactor)
-                .toNumber(),
+            BigNumber(token1Domain[0]).minus(yBuffer).toNumber(),
+            BigNumber(token1Domain[1]).plus(yBuffer).toNumber(),
         ];
-        yScale = d3.scaleLinear().domain(yDomain).range([height, 0]).nice();
+        yScale = d3.scaleLinear().domain(yDomain).range([height, 0]);
         componentContainer.append('g').call(d3.axisLeft(yScale));
 
         // Y axis label:
@@ -140,10 +138,10 @@ export const renderReserveProduct = (
 
         componentContainer
             .select('#xyPoint')
-            .attr('cx', x)
-            .attr('cy', y)
             .transition()
-            .duration(flowDuration());
+            .duration(flowDuration())
+            .attr('cx', x)
+            .attr('cy', y);
 
         const xline = d3.line()([
             [0, y],
@@ -151,9 +149,9 @@ export const renderReserveProduct = (
         ]);
         componentContainer
             .select('#xLine')
-            .attr('d', xline)
             .transition()
-            .duration(flowDuration());
+            .duration(flowDuration())
+            .attr('d', xline);
 
         const yLine = d3.line()([
             [x, height],
@@ -161,9 +159,9 @@ export const renderReserveProduct = (
         ]);
         componentContainer
             .select('#yLine')
-            .attr('d', yLine)
             .transition()
-            .duration(flowDuration());
+            .duration(flowDuration())
+            .attr('d', yLine);
 
         // Calc top left point
         // min x = k / max y
@@ -193,9 +191,9 @@ export const renderReserveProduct = (
         ]);
         componentContainer
             .select('#xyCurve')
-            .attr('d', xyCurve)
             .transition()
-            .duration(flowDuration());
+            .duration(flowDuration())
+            .attr('d', xyCurve);
     };
 
     render();
