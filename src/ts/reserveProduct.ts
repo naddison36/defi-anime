@@ -94,24 +94,20 @@ export const renderReserveProduct = (
             .attr('cy', y)
             .transition()
             .duration(flowDuration);
+        const xline = d3.line()([
+            [0, y],
+            [x, y],
+        ]);
         svg.select('#xLine')
-            .attr(
-                'd',
-                d3.line()([
-                    [0, y],
-                    [x, y],
-                ]),
-            )
+            .attr('d', xline)
             .transition()
             .duration(flowDuration);
+        const yLine = d3.line()([
+            [x, height],
+            [x, y],
+        ]);
         svg.select('#yLine')
-            .attr(
-                'd',
-                d3.line()([
-                    [x, height],
-                    [x, y],
-                ]),
-            )
+            .attr('d', yLine)
             .transition()
             .duration(flowDuration);
 
