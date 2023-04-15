@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import { parseExchangeRate, parseInvariant } from './parsers';
 import { Balance, Flow, Time } from './typings';
 
-const margin = { top: 10, right: 50, bottom: 70, left: 120 },
+const margin = { top: 20, right: 75, bottom: 80, left: 120 },
     width = 500 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
@@ -29,6 +29,15 @@ export const renderHistoricalRates = (
         .append('g')
         .attr('transform', `translate(${margin.left},  ${margin.top})`);
 
+    // title label:
+    svg.append('text')
+        .attr('text-anchor', 'end')
+        .attr('class', 'xLabel')
+        .attr('x', width / 2 + 67.5)
+        .attr('y', margin.top / 2 - 11)
+        .attr('fill', 'currentColor')
+        .text('Price and Inveriant');
+
     const blockScale = d3
         .scaleLinear()
         .domain(d3.extent(times, (d) => d.block))
@@ -40,6 +49,35 @@ export const renderHistoricalRates = (
         .selectAll('text')
         .attr('transform', 'translate(-10,0)rotate(-45)')
         .style('text-anchor', 'end');
+
+    // Add X axis label:
+    svg.append('text')
+        .attr('text-anchor', 'end')
+        .attr('class', 'xLabel')
+        .attr('x', width / 2)
+        .attr('y', height + margin.top + margin.bottom - 25)
+        .attr('fill', 'currentColor')
+        .text('Blocks');
+
+    // Y axis label 1:
+    svg.append('text')
+        .attr('text-anchor', 'end')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', -margin.left + 10)
+        .attr('x', -margin.top - height / 3)
+        .attr('fill', 'currentColor')
+        .attr('color', 'orange')
+        .text('Inveriant');
+
+    // Y axis label 2:
+    svg.append('text')
+        .attr('text-anchor', 'end')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', margin.right + width - 15)
+        .attr('x', margin.top - height / 2 + 50)
+        .attr('fill', 'currentColor')
+        .attr('color', '#69b3a2')
+        .text('WETH / USDC Price');
 
     // Historical exchange rate (price)
     const ratesDomain = d3.extent(

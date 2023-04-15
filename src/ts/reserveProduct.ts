@@ -4,7 +4,7 @@ import { flowDuration } from './main';
 import { Balance } from './typings';
 
 // set the dimensions and margins of the graph
-const margin = { top: 5, right: 5, bottom: 70, left: 70 },
+const margin = { top: 20, right: 5, bottom: 80, left: 70 },
     width = 400 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom,
     dotRadius = 5;
@@ -41,7 +41,7 @@ export const renderReserveProduct = (
         .attr('text-anchor', 'end')
         .attr('class', 'xLabel')
         .attr('x', width / 2)
-        .attr('y', height + margin.top + margin.bottom - 12)
+        .attr('y', height + margin.top + margin.bottom - 25)
         .attr('fill', 'currentColor')
         .text(tokens[0]);
 
@@ -62,6 +62,15 @@ export const renderReserveProduct = (
         .attr('x', -margin.top - height / 2)
         .attr('fill', 'currentColor')
         .text(tokens[1]);
+
+    // title label:
+    svg.append('text')
+        .attr('text-anchor', 'end')
+        .attr('class', 'xLabel')
+        .attr('x', width / 2 + 25)
+        .attr('y', margin.top / 2 - 11)
+        .attr('fill', 'currentColor')
+        .text('x * y = k');
 
     // Container for the exchange rate circle and lines to the x and y axis
     const rate = svg.append('g');
