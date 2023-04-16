@@ -2,11 +2,17 @@
 
 [ETH Tokyo](https://ethglobal.com/events/tokyo) hackathon project animating a USDC/WETH [Uniswap](https://uniswap.org/) V3 pool over time.
 
+![Pool Flows](./images/PoolFlows.gif)
+
+The flow of USDC (blue) and WETH (pink) in and out of the pool. The larger the circle the larger the liquidity transfer.
+
 ## Description
 
 This project animates what happened to the [Uniswap V3 USDC/ETH pool with 0.3% fee](https://info.uniswap.org/#/pools/0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8) over different time periods. Most DeFI analytics are static snapshots of time, eg pool reserve balances, or charts of historical prices and volumes. Using animated visuals, details like which accounts liquidity flows can be made from when can be shown.
 
-The workings of Uniswap's Automated Market Maker (AMM) can be clearly seen. The classic xy=k graph can be shown for each of the pool's positions. The transition between each of the pool's animations is animated.
+The workings of Uniswap's Automated Market Maker (AMM) can be seen with the classic xy=k graph. As liquidity is added or removed to the pool via a swap, mint or burn, the chart transitions to the new state.
+
+![xy=k Curve](./images/xyCurveDynamic.gif)
 
 This idea can be extended to other DeFi AMMs like Curve and Balancer.
 It could also be made to work with a live feed of a pool.
